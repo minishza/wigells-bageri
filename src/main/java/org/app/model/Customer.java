@@ -22,10 +22,6 @@ public class Customer extends BusinessObject implements Subject {
         notifyObservers("ORDER", cake.getType());
     }
 
-    public void orderCompleted(CakeType cakeType) {
-        notifyObservers("Order Ready", cakeType);
-    }
-
     public void showCakeHistory() {
         System.out.println("\n--- Order History : " + name + " ---");
         for (Cake cake : history) {

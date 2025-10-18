@@ -11,34 +11,17 @@ import org.app.command.PrincessDecorationCommand;
 import org.app.model.CakeType;
 import org.app.model.Customer;
 import org.app.model.cake.Cake;
-import org.app.observer.Observer;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class OrderHandler {
-    private List<Observer> observers;
-
-    public OrderHandler() {
-        this.observers = new ArrayList<>();
-    }
-
-    public void attach(Observer observer) {
-        observers.add(observer);
-    }
-
-    public void notify(String event, String cakeName) {
-        for (Observer observer : observers) {
-            observer.update(event, cakeName);
-        }
-    }
+    public OrderHandler() {}
 
     public void orderCake(Customer customer, CakeType cakeType) {
         System.out.println("\n++++++ NEW CAKE ++++++");
         System.out.println("Customer: " + customer.getName());
         System.out.println("Typ: " + cakeType);
 
-        notify("BESTÄLLD: " + customer.getName() + " cake : " + cakeType, cakeType.name());
+        customer.notifyObservers("ORDER", cakeType);
 
         CakeBuilder builder;
         Cake cake;
@@ -69,8 +52,7 @@ public class OrderHandler {
 
         command.execute();
 
-        System.out.println();
-        notify("KLART: " + cakeType + " gjort för " + customer.getName(), cake.getName());
+        customer.notifyObservers("TÅRTA KLAR", cakeType);
 
         customer.addOrder(cake);
     }
