@@ -1,25 +1,42 @@
 package org.app.model;
 
 import org.app.model.cake.Cake;
-import org.app.observer.Observer;
-import org.app.observer.Subject;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer extends BusinessObject implements Subject {
-    public List<Observer> observers;
-    public List<Cake> history;
+public class Customer extends BusinessObject {
+
+    private final List<Cake> history;
+    private final PropertyChangeSupport pcs;
 
     public Customer(String name) {
         super(name);
-        this.observers = new ArrayList<>();
         this.history = new ArrayList<>();
+        this.pcs = new PropertyChangeSupport(this);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
+    }
+
+    public void fireOrderEvent(CakeType cakeType) {
+        pcs.firePropertyChange("order", null, cakeType);
+    }
+
+    public void fireCakeReadyEvent(CakeType cakeType) {
+        pcs.firePropertyChange("cake is ready", null, cakeType);
     }
 
     public void addOrder(Cake cake) {
         history.add(cake);
-        notifyObservers("ORDER", cake.getType());
+        pcs.firePropertyChange("order", null, cake.getType());
     }
 
     public void showCakeHistory() {
@@ -28,22 +45,5 @@ public class Customer extends BusinessObject implements Subject {
             System.out.println("  - " + cake.name + " (" + cake.getType() + ")");
         }
         System.out.println();
-    }
-
-    @Override
-    public void registerObserver(Observer o) {
-        observers.add(o);
-    }
-
-    @Override
-    public void removeObserver(Observer o) {
-        observers.remove(o);
-    }
-
-    @Override
-    public void notifyObservers(String message, CakeType cakeType) {
-        for (Observer o : observers) {
-            o.update(message, cakeType.name());
-        }
     }
 }

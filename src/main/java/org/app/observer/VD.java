@@ -3,16 +3,19 @@ package org.app.observer;
 
 import org.app.model.BusinessObject;
 
-public class VD extends BusinessObject implements Observer {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class VD extends BusinessObject implements PropertyChangeListener {
     public VD(String namn) {
         super(namn);
     }
 
     @Override
-    public void update(String message, String cakeName) {
+    public void propertyChange(PropertyChangeEvent evt) {
         System.out.println("\n - MEDDELANDE TILL VD - ");
-        System.out.println("Meddelande: " + message);
-        System.out.println("Tårta: " + cakeName);
+        System.out.println("Händelse: " + evt.getPropertyName());
+        System.out.println("Tårta: " + evt.getNewValue());
         System.out.println("--------------------------\n");
     }
 }

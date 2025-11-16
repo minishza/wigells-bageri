@@ -1,22 +1,12 @@
 package org.app;
 
-import org.app.builder.ChocolateCakeBuilder;
-import org.app.builder.OperaCakeBuilder;
-import org.app.builder.PrincessCakeBuilder;
-import org.app.command.ChocolateDecorationCommand;
-import org.app.command.OperaDecorationCommand;
-import org.app.command.PrincessDecorationCommand;
-import org.app.model.CakeType;
 import org.app.model.Customer;
-import org.app.model.cake.Cake;
-import org.app.model.cake.ChocolateCake;
-import org.app.model.cake.PrincessCake;
+import org.app.model.CakeType;
 import org.app.observer.VD;
 import org.app.system.OrderHandler;
 
 import java.util.Scanner;
 
-// ============ MAIN ============
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -27,7 +17,7 @@ public class Main {
         String customerName = scanner.nextLine();
         Customer customer = new Customer(customerName);
 
-        customer.registerObserver(vd);
+        customer.addPropertyChangeListener(vd);
 
         boolean continueOrders = true;
 
@@ -44,24 +34,15 @@ public class Main {
             scanner.nextLine();
 
             switch (val) {
-                case 1:
-                    orderHandler.orderCake(customer, CakeType.PRINCESS_CAKE);
-                    break;
-                case 2:
-                    orderHandler.orderCake(customer, CakeType.OPERA_CAKE);
-                    break;
-                case 3:
-                    orderHandler.orderCake(customer, CakeType.CHOCOLATE_CAKE);
-                    break;
-                case 4:
-                    customer.showCakeHistory();
-                    break;
-                case 5:
+                case 1 -> orderHandler.orderCake(customer, CakeType.PRINCESS_CAKE);
+                case 2 -> orderHandler.orderCake(customer, CakeType.OPERA_CAKE);
+                case 3 -> orderHandler.orderCake(customer, CakeType.CHOCOLATE_CAKE);
+                case 4 -> customer.showCakeHistory();
+                case 5 -> {
                     continueOrders = false;
                     System.out.println("bye.");
-                    break;
-                default:
-                    System.out.println("WRONG NUMBER");
+                }
+                default -> System.out.println("WRONG NUMBER");
             }
         }
 

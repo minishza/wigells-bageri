@@ -4,16 +4,13 @@ import org.app.builder.CakeBuilder;
 import org.app.builder.ChocolateCakeBuilder;
 import org.app.builder.OperaCakeBuilder;
 import org.app.builder.PrincessCakeBuilder;
-import org.app.command.ChocolateDecorationCommand;
-import org.app.command.Command;
-import org.app.command.OperaDecorationCommand;
-import org.app.command.PrincessDecorationCommand;
+import org.app.command.*;
 import org.app.model.CakeType;
 import org.app.model.Customer;
-import org.app.model.cake.Cake;
-
+import org.app.model.cake.*;
 
 public class OrderHandler {
+
     public OrderHandler() {}
 
     public void orderCake(Customer customer, CakeType cakeType) {
@@ -21,20 +18,17 @@ public class OrderHandler {
         System.out.println("Customer: " + customer.getName());
         System.out.println("Typ: " + cakeType);
 
-        customer.notifyObservers("ORDER", cakeType);
+        customer.fireOrderEvent(cakeType);
 
-        CakeBuilder builder;
-        Cake cake;
-        Command command;
-
-        builder = switch (cakeType) {
-            case CakeType.PRINCESS_CAKE -> new PrincessCakeBuilder("Princess Cake");
-            case CakeType.OPERA_CAKE -> new OperaCakeBuilder("Opera Cake");
-            case CakeType.CHOCOLATE_CAKE -> new ChocolateCakeBuilder("Chocolate Cake");
+        CakeBuilder builder = switch (cakeType) {
+            case PRINCESS_CAKE -> new PrincessCakeBuilder("Princess Cake");
+            case OPERA_CAKE -> new OperaCakeBuilder("Opera Cake");
+            case CHOCOLATE_CAKE -> new ChocolateCakeBuilder("Chocolate Cake");
         };
 
         System.out.println("\n--- Skapas ---");
-        cake = builder.addFirstCakeBase()
+
+        Cake cake = builder.addFirstCakeBase()
                 .applyCream()
                 .addSecondCakeBase()
                 .addAdditionalCream()
@@ -42,18 +36,20 @@ public class OrderHandler {
                 .build();
 
         System.out.println("--- Dekoreras ---");
-        if (cakeType == CakeType.PRINCESS_CAKE) {
-            command = new PrincessDecorationCommand(cake);
-        } else if (cakeType == CakeType.OPERA_CAKE) {
-            command = new OperaDecorationCommand(cake);
-        } else {
-            command = new ChocolateDecorationCommand(cake);
+        DecorationPipeline pipeline = new DecorationPipeline();
+
+        switch (cakeType) {
+            case PRINCESS_CAKE ->
+                    pipeline.addCommand(new PrincessDecorationCommand((PrincessCake) cake));
+            case OPERA_CAKE ->
+                    pipeline.addCommand(new OperaDecorationCommand((OperaCake) cake));
+            case CHOCOLATE_CAKE ->
+                    pipeline.addCommand(new ChocolateDecorationCommand((ChocolateCake) cake));
         }
 
-        command.execute();
+        pipeline.executeAll();
 
-        customer.notifyObservers("TÅRTA KLAR", cakeType);
-
+        customer.fireCakeReadyEvent(cakeType);
         customer.addOrder(cake);
     }
 }
