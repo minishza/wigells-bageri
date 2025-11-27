@@ -10,14 +10,12 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        OrderHandler orderHandler = new OrderHandler();
-        VD vd = new VD("Wigells VD");
+        VD vd = new VD("Wigells Bageri VD");
+        OrderHandler orderHandler = new OrderHandler(vd);
 
         System.out.print("Namn: ");
         String customerName = scanner.nextLine();
         Customer customer = new Customer(customerName);
-
-        customer.addPropertyChangeListener(vd);
 
         boolean continueOrders = true;
 
